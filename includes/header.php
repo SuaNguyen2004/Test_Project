@@ -8,7 +8,7 @@
             <a href="/test_project/index.php" style="color: white; text-decoration: none;">Trang Chủ</a>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <span>Chào, <strong style="color: #f1c40f;"><?php echo $_SESSION['ho_ten']; ?></strong></span>
+                    <span>Chào, <a href="../manager/profile.php"><strong style="color: #f1c40f;"><?php echo $_SESSION['ho_ten']; ?></strong></a></span>
                     <?php if ($_SESSION['vai_tro'] == 'admin'): ?>
                         <a href="/test_project/admin/index.php" style="color: #e74c3c; font-weight: bold; text-decoration: none;">Quản trị</a>
                     <?php else: ?>
