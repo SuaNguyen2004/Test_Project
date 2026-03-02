@@ -12,7 +12,7 @@
                     <?php if ($_SESSION['vai_tro'] == 'admin'): ?>
                         <a href="/test_project/admin/index.php" style="color: #e74c3c; font-weight: bold; text-decoration: none;">Quản trị</a>
                     <?php else: ?>
-                        <a href="/test_project/gio-hang.php" style="color: #5dade2; text-decoration: none;">Giỏ hàng</a>
+                        <a href="/test_project/gio-hang.php" style="color: #5dade2; text-decoration: none;">🛒 Giỏ hàng</a>
                     <?php endif; ?>
                     <a href="/test_project/manager/dang-xuat.php" style="color: #bdc3c7; text-decoration: none; border: 1px solid #bdc3c7; padding: 5px 10px; border-radius: 4px;">Đăng xuất</a>
                 </div>

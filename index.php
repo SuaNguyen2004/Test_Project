@@ -104,16 +104,15 @@ $categories = $stmt_cate->fetchAll();
                     <?php
                     // CÁCH 1: Lấy 4 sản phẩm mới nhất của danh mục này (Khuyên dùng)
                     $sql_sp = "SELECT * FROM san_pham 
-                   WHERE danh_muc_id = ? AND ten_san_pham LIKE ? 
-                   ORDER BY id DESC 
-                   LIMIT 4";
+                       WHERE danh_muc_id = ? AND ten_san_pham LIKE ? 
+                       ORDER BY id DESC 
+                       LIMIT 4";
 
-                    /* CÁCH 2: Nếu bạn muốn lấy 4 sản phẩm NGẪU NHIÊN, hãy dùng dòng này thay thế:
-                    $sql_sp = "SELECT * FROM san_pham 
-                   WHERE danh_muc_id = ? AND ten_san_pham LIKE ? 
-                   ORDER BY RAND() 
-                   LIMIT 4"; 
-        */
+                    // CÁCH 2: Nếu bạn muốn lấy 4 sản phẩm NGẪU NHIÊN, hãy dùng dòng này thay thế:
+                    //     $sql_sp = "SELECT * FROM san_pham 
+                    //    WHERE danh_muc_id = ? AND ten_san_pham LIKE ? 
+                    //    ORDER BY RAND() 
+                    //    LIMIT 4";
 
                     $stmt_sp = $pdo->prepare($sql_sp);
                     $stmt_sp->execute([$cat['id'], "%$search%"]);
