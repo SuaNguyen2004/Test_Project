@@ -1,0 +1,1 @@
+<footer>Bản quyền thuộc về cửa hàng tạp hóa</footer>
