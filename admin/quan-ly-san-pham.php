@@ -28,6 +28,13 @@ $stmt = $pdo->query($sql);
 $products = $stmt->fetchAll();
 ?>
 
+<div style="margin-top: 20px;">
+    <?php if (hasRole('admin')): ?>
+        <a href="index.php">← Quay lại Dashboard Admin</a>
+    <?php else: ?>
+        <a href="../nhan-vien/index.php">← Quay lại Dashboard Nhân viên</a>
+    <?php endif; ?>
+</div>
 <div class="container" style="padding: 20px;">
     <h2>Quản lý sản phẩm</h2>
 
@@ -79,13 +86,6 @@ $products = $stmt->fetchAll();
         </tbody>
     </table>
 
-    <div style="margin-top: 20px;">
-        <?php if (hasRole('admin')): ?>
-            <a href="index.php">← Quay lại Dashboard Admin</a>
-        <?php else: ?>
-            <a href="../nhan-vien/index.php">← Quay lại Dashboard Nhân viên</a>
-        <?php endif; ?>
-    </div>
 </div>
 
 <?php include '../includes/footer.php'; ?>

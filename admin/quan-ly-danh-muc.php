@@ -31,6 +31,10 @@ if (isset($_GET['delete_id'])) {
 $categories = $pdo->query("SELECT * FROM danh_muc ORDER BY id DESC")->fetchAll();
 ?>
 
+<div style="margin-top: 20px;">
+    <a href="index.php" style="color: #7f8c8d; text-decoration: none;">← Quay lại Dashboard</a>
+</div>
+
 <div class="container" style="padding: 20px; max-width: 800px; margin: auto;">
     <h2 style="color: #2c3e50;">📁 Quản lý danh mục</h2>
 
@@ -68,9 +72,6 @@ $categories = $pdo->query("SELECT * FROM danh_muc ORDER BY id DESC")->fetchAll()
         </tbody>
     </table>
 
-    <div style="margin-top: 20px;">
-        <a href="index.php" style="color: #7f8c8d; text-decoration: none;">← Quay lại Dashboard</a>
-    </div>
 </div>
 
 <?php include '../includes/footer.php'; ?>
