@@ -6,14 +6,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
     $id = $_POST['id'];
     $qty = (int)$_POST['so_luong'];
 
-    // Lấy thông tin SP
     $stmt = $pdo->prepare("SELECT * FROM san_pham WHERE id = ?");
     $stmt->execute([$id]);
     $product = $stmt->fetch();
 
     if ($product) {
         if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
-
         if (isset($_SESSION['cart'][$id])) {
             $_SESSION['cart'][$id]['so_luong'] += $qty;
         } else {
@@ -27,6 +25,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id'])) {
         }
     }
 }
-// Chuyển hướng ngay lập tức để tránh lỗi Resubmission khi Back
-header("Location: gio-hang.php");
+header("Location: gio-hang.php"); // Chuyển sang giỏ hàng sau khi xử lý xong
 exit();

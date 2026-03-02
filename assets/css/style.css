@@ -3,19 +3,38 @@ body {
   line-height: 1.6;
   margin: 0;
   color: #333;
+  padding: 0;
+  overflow-x: hidden; /* Chống tràn ngang */
 }
+/* Đảm bảo body không có khoảng trắng lề ngoài */
+
 .container {
   width: 90%;
   max-width: 1200px;
   margin: auto;
 }
+/* Sửa lại phần Nav trong style.css */
 nav {
   background: #2c3e50;
   color: white;
+  width: 100%; /* Đảm bảo luôn tràn viền */
+  padding: 1rem 0; /* Bỏ padding ngang ở đây */
+  margin: 0;
+  position: relative;
+  left: 0;
+  right: 0;
+}
+
+/* Tạo một class bọc bên trong nav để giữ nội dung ở giữa */
+.nav-content {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
   display: flex;
   justify-content: space-between;
-  padding: 1rem 5%;
+  align-items: center;
 }
+
 nav a {
   color: white;
   text-decoration: none;
@@ -64,4 +83,3 @@ button:hover {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 20px;
 }
-
