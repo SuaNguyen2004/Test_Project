@@ -2,7 +2,7 @@
 require_once 'config/db.php';
 require_once 'includes/function.php';
 
-// Quan trọng: Header phải nằm ngoài cùng để tràn viền 100% màn hình
+// Header nằm ngoài cùng để tràn viền 100% màn hình
 include 'includes/header.php';
 
 // Lấy từ khóa tìm kiếm
@@ -26,7 +26,7 @@ $categories = $stmt_cate->fetchAll();
     <title>Cửa Hàng Tạp Hóa Online</title>
     <link rel="stylesheet" href="assets/css/style1.css">
     <style>
-        /* CSS bổ trợ để căn giữa nội dung bên dưới Nav */
+        /* GIỮ NGUYÊN PHẦN STYLE CŨ CỦA BẠN */
         .main-wrapper {
             max-width: 1200px;
             margin: 0 auto;
@@ -47,35 +47,51 @@ $categories = $stmt_cate->fetchAll();
             flex-wrap: wrap;
             gap: 20px;
             justify-content: center;
-            /* Căn giữa sản phẩm khi số lượng ít */
         }
 
         .product-card {
             width: 220px;
+            /* GIỮ ĐÚNG KÍCH THƯỚC BẠN MUỐN */
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 15px;
             text-align: center;
             background: #fff;
             transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            /* Để ảnh phóng to không tràn khung */
+            box-sizing: border-box;
         }
 
+        /* HIỆU ỨNG MỚI: Đổi nền xám và bóng đổ khi hover */
         .product-card:hover {
+            background-color: #f0f0f0 !important;
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            /* Thấp hơn nav (99999) */
         }
 
         .product-card img {
             width: 100%;
             height: 180px;
-            object-fit: cover;
+            object-fit: contain;
+            /* Sửa lỗi ảnh bị méo/to - giữ nguyên tỉ lệ lon bia/hộp sữa */
             border-radius: 5px;
+            transition: transform 0.4s ease;
+        }
+
+        /* HIỆU ỨNG MỚI: Phóng to ảnh khi hover */
+        .product-card:hover img {
+            transform: scale(1.1);
         }
 
         .price {
             color: #e74c3c;
             font-weight: bold;
             font-size: 1.1rem;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -98,39 +114,50 @@ $categories = $stmt_cate->fetchAll();
             <p style="text-align: center; color: #666;">Không tìm thấy sản phẩm nào.</p>
         <?php else: ?>
             <?php foreach ($categories as $cat): ?>
-                <h3 class="category-title"><?php echo $cat['ten_danh_muc']; ?></h3>
+                <h3 class="category-title" id="cate-<?php echo $cat['id']; ?>">
+                    <?php echo $cat['ten_danh_muc']; ?>
+                </h3>
 
                 <div class="product-grid">
                     <?php
-                    // CÁCH 1: Lấy 4 sản phẩm mới nhất của danh mục này (Khuyên dùng)
                     $sql_sp = "SELECT * FROM san_pham 
-                       WHERE danh_muc_id = ? AND ten_san_pham LIKE ? 
-                       ORDER BY id DESC 
-                       LIMIT 4";
-
-                    // CÁCH 2: Nếu bạn muốn lấy 4 sản phẩm NGẪU NHIÊN, hãy dùng dòng này thay thế:
-                    //     $sql_sp = "SELECT * FROM san_pham 
-                    //    WHERE danh_muc_id = ? AND ten_san_pham LIKE ? 
-                    //    ORDER BY RAND() 
-                    //    LIMIT 4";
-
+                               WHERE danh_muc_id = ? AND ten_san_pham LIKE ? 
+                               ORDER BY id DESC LIMIT 4";
                     $stmt_sp = $pdo->prepare($sql_sp);
                     $stmt_sp->execute([$cat['id'], "%$search%"]);
 
                     while ($row = $stmt_sp->fetch()):
                     ?>
                         <div class="product-card">
-                            <img src="assets/images/<?php echo $row['anh']; ?>" alt="<?php echo $row['ten_san_pham']; ?>">
-                            <h4><?php echo $row['ten_san_pham']; ?></h4>
+                            <a href="chi-tiet.php?id=<?php echo $row['id']; ?>" style="text-decoration: none; display: block;">
+                                <img src="assets/images/<?php echo $row['anh']; ?>" alt="<?php echo $row['ten_san_pham']; ?>">
+                            </a>
+
+                            <a href="chi-tiet.php?id=<?php echo $row['id']; ?>" style="text-decoration: none; color: inherit;">
+                                <h4 style="margin: 10px 0; height: 40px; overflow: hidden;"><?php echo $row['ten_san_pham']; ?></h4>
+                            </a>
+
                             <p class="price"><?php echo formatMoney($row['gia_ban']); ?></p>
-                            <p class="stock">Kho: <?php echo $row['so_luong_kho']; ?></p>
-                            <a href="chi-tiet.php?id=<?php echo $row['id']; ?>" class="view-detail"
-                                style="display: inline-block; text-decoration: none; background: #3498db; color: white; padding: 8px 15px; border-radius: 5px;">Xem chi tiết</a>
+                            <p style="font-size: 0.85rem; color: #666;">Kho: <?php echo $row['so_luong_kho']; ?></p>
+
+                            <?php if ($row['so_luong_kho'] > 0): ?>
+                                <form action="them-vao-gio.php" method="POST">
+                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                    <input type="hidden" name="so_luong" value="1">
+                                    <button type="submit" class="btn-add-cart-custom">
+                                        <span>Thêm vào giỏ</span>
+                                        <span class="cart-icon-circle">🛒</span>
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <button disabled class="btn-add-cart-custom" style="background: #bdc3c7; cursor: not-allowed;">
+                                    <span>Hết hàng</span>
+                                </button>
+                            <?php endif; ?>
                         </div>
                     <?php endwhile; ?>
                 </div>
             <?php endforeach; ?>
-
         <?php endif; ?>
     </div>
 
