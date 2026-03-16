@@ -2,15 +2,13 @@
 require_once '../config/db.php';
 require_once '../includes/function.php';
 
-// Kiểm tra quyền: Chỉ Admin hoặc Nhân viên mới được vào
+// 1. KIỂM TRA QUYỀN TRƯỚC (PHẢI TRÊN CÙNG)
 if (!isLoggedIn() || (!hasRole('nhan_vien') && !hasRole('admin'))) {
     header("Location: ../manager/dang-nhap.php");
     exit();
 }
 
-include '../includes/header.php';
-
-// XỬ LÝ CẬP NHẬT TRẠNG THÁI
+// 2. XỬ LÝ LOGIC CẬP NHẬT TRẠNG THÁI (PHẢI TRƯỚC KHI INCLUDE HEADER)
 if (isset($_GET['action']) && isset($_GET['order_id'])) {
     $id = $_GET['order_id'];
     $current_user_id = $_SESSION['user_id'];
@@ -39,12 +37,19 @@ if (isset($_GET['action']) && isset($_GET['order_id'])) {
             die("Lỗi: " . $e->getMessage());
         }
     }
+    // Sau khi xử lý xong xuôi mới chuyển hướng
     header("Location: quan-ly-don-hang.php");
     exit();
 }
 
+// 3. LẤY DỮ LIỆU ĐỂ HIỂN THỊ
 $orders = $pdo->query("SELECT dh.*, nd.ho_ten FROM don_hang dh JOIN nguoi_dung nd ON dh.khach_hang_id = nd.id ORDER BY dh.ngay_dat DESC")->fetchAll();
+
+// 4. BẮT ĐẦU PHẦN GIAO DIỆN
+include '../includes/header.php';
 ?>
+
+<link rel="stylesheet" href="../assets/css/style3.css">
 
 <div class="container" style="padding: 20px;">
     <div style="margin-bottom: 20px;">
@@ -55,11 +60,12 @@ $orders = $pdo->query("SELECT dh.*, nd.ho_ten FROM don_hang dh JOIN nguoi_dung n
         <?php endif; ?>
     </div>
 
-    <h2>Danh sách đơn đặt hàng</h2>
-    <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+    <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px;">📋 Danh sách đơn đặt hàng</h2>
+
+    <table border="1" style="width: 100%; border-collapse: collapse; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
         <thead style="background: #f8f9fa;">
             <tr>
-                <th style="padding: 10px;">Mã đơn</th>
+                <th style="padding: 12px;">Mã đơn</th>
                 <th>Khách hàng</th>
                 <th>Tổng tiền</th>
                 <th>Ngày đặt</th>
@@ -69,26 +75,32 @@ $orders = $pdo->query("SELECT dh.*, nd.ho_ten FROM don_hang dh JOIN nguoi_dung n
         </thead>
         <tbody>
             <?php foreach ($orders as $o): ?>
-                <tr style="text-align: center;">
-                    <td style="padding: 10px;">
+                <tr style="text-align: center; border-bottom: 1px solid #eee;">
+                    <td style="padding: 15px;">
                         <a href="../admin/chi-tiet-don-hang.php?id=<?php echo $o['id']; ?>" style="font-weight: bold; color: #3498db; text-decoration: none;">
-                            #<?php echo $o['id']; ?> (Xem)
+                            #<?php echo $o['id']; ?>
                         </a>
                     </td>
-                    <td><?php echo $o['ho_ten']; ?></td>
-                    <td><strong><?php echo formatMoney($o['tong_tien']); ?></strong></td>
-                    <td><?php echo date('d/m/Y H:i', strtotime($o['ngay_dat'])); ?></td>
+                    <td><?php echo htmlspecialchars($o['ho_ten']); ?></td>
+                    <td style="color: #e74c3c; font-weight: bold;"><?php echo formatMoney($o['tong_tien']); ?></td>
+                    <td style="color: #7f8c8d;"><?php echo date('d/m/Y H:i', strtotime($o['ngay_dat'])); ?></td>
                     <td>
-                        <span style="padding: 4px 8px; border-radius: 4px; color: white; background: <?php echo ($o['trang_thai'] == 'da_thanh_toan' ? '#27ae60' : ($o['trang_thai'] == 'da_huy' ? '#e74c3c' : '#f39c12')); ?>;">
+                        <?php
+                        $bg = '#f39c12'; // Mặc định chờ duyệt
+                        if ($o['trang_thai'] == 'da_thanh_toan') $bg = '#27ae60';
+                        if ($o['trang_thai'] == 'da_huy') $bg = '#e74c3c';
+                        ?>
+                        <span style="padding: 5px 10px; border-radius: 20px; color: white; font-size: 12px; font-weight: bold; background: <?php echo $bg; ?>;">
                             <?php echo strtoupper($o['trang_thai']); ?>
                         </span>
                     </td>
                     <td>
                         <?php if ($o['trang_thai'] == 'cho_duyet'): ?>
-                            <a href="?action=confirm&order_id=<?php echo $o['id']; ?>" onclick="return confirm('Xác nhận thanh toán?')" style="color: green;">Duyệt</a> |
-                            <a href="?action=cancel&order_id=<?php echo $o['id']; ?>" onclick="return confirm('Hủy đơn?')" style="color: red;">Hủy</a>
+                            <a href="?action=confirm&order_id=<?php echo $o['id']; ?>" onclick="return confirm('Xác nhận thanh toán đơn này?')" style="color: #27ae60; font-weight: bold; text-decoration: none;">Duyệt</a>
+                            <span style="color: #ccc;"> | </span>
+                            <a href="?action=cancel&order_id=<?php echo $o['id']; ?>" onclick="return confirm('Bạn có chắc chắn muốn hủy đơn này?')" style="color: #e74c3c; font-weight: bold; text-decoration: none;">Hủy</a>
                         <?php else: ?>
-                            <span style="color: #999;">Xong</span>
+                            <span style="color: #bdc3c7; font-style: italic;">Đã xử lý</span>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -96,4 +108,5 @@ $orders = $pdo->query("SELECT dh.*, nd.ho_ten FROM don_hang dh JOIN nguoi_dung n
         </tbody>
     </table>
 </div>
+
 <?php include '../includes/footer.php'; ?>

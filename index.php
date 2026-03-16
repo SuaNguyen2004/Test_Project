@@ -3,14 +3,26 @@ require_once 'config/db.php';
 require_once 'includes/function.php';
 include 'includes/header.php';
 
-$search = isset($_GET['keyword']) ? $_GET['keyword'] : '';
+// 1. Lấy dữ liệu từ URL
+$search = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
+$category_id = isset($_GET['category']) ? (int)$_GET['category'] : 0;
 
-$sql_cate = "SELECT DISTINCT dm.* FROM danh_muc dm 
-             JOIN san_pham sp ON dm.id = sp.danh_muc_id 
-             WHERE sp.ten_san_pham LIKE ? ORDER BY dm.id ASC";
-$stmt_cate = $pdo->prepare($sql_cate);
-$stmt_cate->execute(["%$search%"]);
-$categories = $stmt_cate->fetchAll();
+// 2. Logic truy vấn danh mục hiển thị
+if ($category_id > 0) {
+    // Nếu chọn 1 danh mục cụ thể
+    $sql_cate = "SELECT * FROM danh_muc WHERE id = ?";
+    $stmt_cate = $pdo->prepare($sql_cate);
+    $stmt_cate->execute([$category_id]);
+    $categories = $stmt_cate->fetchAll();
+} else {
+    // Nếu ở trang chủ mặc định hoặc đang tìm kiếm
+    $sql_cate = "SELECT DISTINCT dm.* FROM danh_muc dm 
+                 JOIN san_pham sp ON dm.id = sp.danh_muc_id 
+                 WHERE sp.ten_san_pham LIKE ? ORDER BY dm.id ASC";
+    $stmt_cate = $pdo->prepare($sql_cate);
+    $stmt_cate->execute(["%$search%"]);
+    $categories = $stmt_cate->fetchAll();
+}
 ?>
 
 <!DOCTYPE html>
@@ -25,7 +37,6 @@ $categories = $stmt_cate->fetchAll();
             padding-top: 80px !important;
         }
 
-        /* Giảm padding vì header đã gọn hơn */
         html {
             scroll-behavior: smooth;
             scroll-padding-top: 100px;
@@ -53,7 +64,6 @@ $categories = $stmt_cate->fetchAll();
             justify-content: center;
         }
 
-        /* GIỮ NGUYÊN KÍCH THƯỚC 220PX */
         .product-card {
             width: 220px;
             border: 1px solid #ddd;
@@ -69,7 +79,6 @@ $categories = $stmt_cate->fetchAll();
 
         .product-card:hover {
             background-color: #f0f0f0 !important;
-            /* Nền xám khi hover */
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             z-index: 10;
@@ -82,7 +91,6 @@ $categories = $stmt_cate->fetchAll();
             transition: transform 0.4s ease;
         }
 
-        /* Phóng to ảnh khi hover */
         .product-card:hover img {
             transform: scale(1.1);
         }
@@ -94,7 +102,6 @@ $categories = $stmt_cate->fetchAll();
             margin: 10px 0;
         }
 
-        /* Nút thêm vào giỏ màu đỏ */
         .btn-add-red {
             background: #ee4d2d;
             color: white;
@@ -129,7 +136,17 @@ $categories = $stmt_cate->fetchAll();
 
 <body>
     <div class="main-wrapper">
-        <h2 style="text-align: center; color: #2c3e50;">DANH SÁCH SẢN PHẨM</h2>
+        <h2 style="text-align: center; color: #2c3e50;">
+            <?php
+            if ($search) echo "KẾT QUẢ TÌM KIẾM: \"" . htmlspecialchars($search) . "\"";
+            elseif ($category_id && isset($categories[0])) echo "DANH MỤC: " . $categories[0]['ten_danh_muc'];
+            else echo "DANH SÁCH SẢN PHẨM";
+            ?>
+        </h2>
+
+        <?php if (empty($categories)): ?>
+            <p style="text-align: center; margin-top: 50px;">Không tìm thấy sản phẩm nào phù hợp.</p>
+        <?php endif; ?>
 
         <?php foreach ($categories as $cat): ?>
             <h3 class="category-title" id="cate-<?php echo $cat['id']; ?>">
@@ -138,8 +155,14 @@ $categories = $stmt_cate->fetchAll();
 
             <div class="product-grid">
                 <?php
-                $stmt_sp = $pdo->prepare("SELECT * FROM san_pham WHERE danh_muc_id = ? AND ten_san_pham LIKE ? ORDER BY id DESC LIMIT 4");
+                // Truy vấn sản phẩm theo danh mục VÀ từ khóa tìm kiếm
+                // Nếu không chọn danh mục cụ thể, LIMIT 4 để làm trang chủ đẹp
+                // Nếu đã chọn danh mục, bỏ LIMIT để xem tất cả
+                $limit = ($category_id > 0) ? "" : "LIMIT 4";
+                $sql_sp = "SELECT * FROM san_pham WHERE danh_muc_id = ? AND ten_san_pham LIKE ? ORDER BY id DESC $limit";
+                $stmt_sp = $pdo->prepare($sql_sp);
                 $stmt_sp->execute([$cat['id'], "%$search%"]);
+
                 while ($row = $stmt_sp->fetch()):
                 ?>
                     <div class="product-card">

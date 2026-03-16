@@ -1,0 +1,19 @@
+/* --- assets/css/style3.css --- */
+/* File này chỉ dùng để xử lý khoảng cách chống bị che lấp bởi Fixed Nav */
+
+body {
+  /* Đẩy toàn bộ nội dung trang xuống một khoảng bằng hoặc lớn hơn chiều cao của Nav */
+  padding-top: 30px !important;
+}
+
+/* Nếu trên mobile thanh Nav của bạn cao hơn (thường do menu bị nhảy dòng) */
+@media (max-width: 768px) {
+  body {
+    padding-top: 110px !important;
+  }
+}
+
+/* Class bổ trợ nếu bạn muốn đẩy một khối cụ thể thay vì cả body */
+.spacer-top {
+  margin-top: 90px !important;
+}
