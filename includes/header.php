@@ -18,7 +18,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         $stmt_nav = $pdo->query("SELECT * FROM danh_muc ORDER BY id ASC");
                         while ($nav_item = $stmt_nav->fetch()):
                     ?>
-                            <a href="/test_project/index.php#cate-<?php echo $nav_item['id']; ?>">
+                            <a href="/test_project/index.php?category=<?php echo $nav_item['id']; ?>">
                                 <?php echo htmlspecialchars($nav_item['ten_danh_muc']); ?>
                             </a>
                     <?php endwhile;
@@ -42,7 +42,11 @@ if (session_status() === PHP_SESSION_NONE) {
                 <div class="user-box">
                     <span class="welcome-text">Chào, <a href="/test_project/manager/profile.php" class="user-name"><?php echo $_SESSION['ho_ten']; ?></a></span>
 
-                    <?php if ($_SESSION['vai_tro'] == 'khach_hang'): ?>
+                    <?php if ($_SESSION['vai_tro'] == 'admin'): ?>
+                        <a href="/test_project/admin/index.php" class="role-link admin-link">[Quản trị Admin]</a>
+                    <?php elseif ($_SESSION['vai_tro'] == 'nhan_vien'): ?>
+                        <a href="/test_project/nhan-vien/index.php" class="role-link staff-link">[Nhân viên]</a>
+                    <?php else: ?>
                         <a href="/test_project/gio-hang.php" class="nav-link">🛒 Giỏ hàng</a>
                         <a href="/test_project/lich-su-mua-hang.php" class="nav-link">Lịch sử</a>
                     <?php endif; ?>
@@ -69,7 +73,6 @@ if (session_status() === PHP_SESSION_NONE) {
         font-family: 'Segoe UI', sans-serif;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         height: 60px;
-        /* KHÓA CỨNG CHIỀU CAO HEADER */
         display: flex;
         align-items: center;
     }
@@ -79,6 +82,7 @@ if (session_status() === PHP_SESSION_NONE) {
         max-width: 1400px;
         margin: 0 auto;
         display: flex;
+        justify-content: space-between;
         align-items: center;
         padding: 0 20px;
         height: 100%;
@@ -88,37 +92,36 @@ if (session_status() === PHP_SESSION_NONE) {
         display: flex;
         align-items: center;
         gap: 15px;
-        flex-shrink: 0;
+        flex: 1;
     }
 
     .logo-text {
         color: white;
         text-decoration: none;
         font-weight: bold;
-        font-size: 1.3rem;
+        font-size: 1.35rem;
         letter-spacing: 1px;
+        white-space: nowrap;
     }
 
-    /* Ô TÌM KIẾM CHIẾM KHÔNG GIAN NHƯNG GỌN CHIỀU CAO */
     .nav-search-fill {
-        flex: 1;
+        flex: 1.5;
         display: flex;
         justify-content: center;
-        margin-top: 20px;
-        padding: 0 30px;
+        align-items: center;
+        height: 100%;
     }
 
     .search-flex {
         display: flex;
         background: white;
         border-radius: 20px;
-        padding: 2px 2px 2px 15px;
+        padding: 0 2px 0 15px;
         width: 100%;
-        max-width: 500px;
-        /* Thu hẹp chiều rộng lại một chút cho đỡ thô */
-        height: 32px;
-        /* GIẢM CHIỀU CAO Ô SEARCH */
+        max-width: 450px;
+        height: 34px;
         align-items: center;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .search-flex input {
@@ -134,25 +137,31 @@ if (session_status() === PHP_SESSION_NONE) {
         background: #f1c40f;
         border: none;
         border-radius: 50%;
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: 0.3s;
+    }
+
+    .search-flex button:hover {
+        background: #f39c12;
     }
 
     .nav-right {
         display: flex;
         align-items: center;
         gap: 15px;
-        flex-shrink: 0;
+        flex: 1;
+        justify-content: flex-end;
     }
 
     .nav-link {
         color: white;
         text-decoration: none;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         font-weight: 500;
         white-space: nowrap;
     }
@@ -160,7 +169,7 @@ if (session_status() === PHP_SESSION_NONE) {
     .user-box {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
     }
 
     .user-name {
@@ -169,20 +178,54 @@ if (session_status() === PHP_SESSION_NONE) {
         font-weight: bold;
     }
 
+    /* Style riêng cho các link quản trị để làm nổi bật */
+    .role-link {
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 0.85rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .admin-link {
+        color: #ff4d4d;
+        border: 1px solid #ff4d4d;
+    }
+
+    .admin-link:hover {
+        background: #ff4d4d;
+        color: white;
+    }
+
+    .staff-link {
+        color: #2ecc71;
+        border: 1px solid #2ecc71;
+    }
+
+    .staff-link:hover {
+        background: #2ecc71;
+        color: white;
+    }
+
     .btn-logout {
         color: #bdc3c7;
         text-decoration: none;
-        padding: 2px 8px;
+        padding: 3px 8px;
         border: 1px solid #bdc3c7;
         border-radius: 4px;
         font-size: 0.75rem;
+    }
+
+    .btn-logout:hover {
+        background: #bdc3c7;
+        color: #2c3e50;
     }
 
     .dropdown-btn {
         background: #34495e;
         color: white;
         border: none;
-        padding: 6px 12px;
+        padding: 7px 12px;
         border-radius: 4px;
         cursor: pointer;
         font-size: 0.85rem;
@@ -196,7 +239,7 @@ if (session_status() === PHP_SESSION_NONE) {
         box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
         z-index: 100000;
         border-radius: 4px;
-        top: 40px;
+        top: 45px;
     }
 
     .dropdown-content a {

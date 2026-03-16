@@ -51,7 +51,7 @@ include '../includes/header.php';
 
 <link rel="stylesheet" href="../assets/css/style3.css">
 
-<div class="container" style="padding: 20px;">
+<div class="container" style="padding: 20px; margin-top: 20px;">
     <div style="margin-bottom: 20px;">
         <?php if (hasRole('admin')): ?>
             <a href="../admin/index.php" style="text-decoration: none; color: #555; font-weight: bold;">← Dashboard Admin</a>

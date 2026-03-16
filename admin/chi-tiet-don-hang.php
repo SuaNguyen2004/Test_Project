@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="../assets/css/style3.css">
 <?php
 require_once '../config/db.php';
 require_once '../includes/function.php';
