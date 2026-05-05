@@ -104,9 +104,9 @@
     <div class="footer-column">
       <h3>Về chúng tôi</h3>
       <p>
-        <strong>Hệ thống GENIUS</strong> - Chuyên cung cấp các thiết bị công nghệ,
-        linh kiện máy tính và giải pháp phần mềm hàng đầu. Chúng tôi cam kết
-        mang đến sản phẩm chất lượng và trải nghiệm mua sắm tốt nhất.
+        <strong>Hệ thống GENIUS</strong> - Chuyên cung cấp các mặt hàng tiêu dùng,
+        thực phẩm thiết yếu và đồ gia dụng tiện ích cho mọi gia đình. Chúng tôi cam kết
+        mang đến sản phẩm an toàn, giá cả bình ổn và trải nghiệm mua sắm tiện lợi nhất.
       </p>
     </div>
 
